@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013		João Fernandes <joao.m.fernandes.ext@coriant.com>
+ * Copyright (c) 2013 João Fernandes <mail youknowwhat joaofernandes putadothere eu>
  *
  * Parts derived from drivers/devices/mtd/phram.c, copyright of their
  * respective owners.
@@ -407,5 +407,5 @@ module_init(init_prbbd);
 module_exit(cleanup_prbbd);
 
 MODULE_LICENSE("Dual BSD/GPL");
-MODULE_AUTHOR("João Fernandes <joao.m.fernandes.ext@coriant.com>");
-MODULE_DESCRIPTION("Block device driver for physical RAM");
+MODULE_AUTHOR("João Fernandes <mail youknowwhat joaofernandes putadothere eu>");
+MODULE_DESCRIPTION("Persistent RAM Backed Block Device Driver");
