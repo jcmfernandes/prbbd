@@ -1,6 +1,6 @@
 # PRBBD
 
-**P**ersistent **R**AM **B**acked **B**lock **D**evice Driver
+A Persistent RAM Backed Block Device Driver.
 
 ## What is it?
 
