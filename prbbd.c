@@ -30,8 +30,10 @@
 #define RM_NOQUEUE	1
 
 
-#define KERNEL_SECTOR_SIZE		512
-#define SECTOR_SIZE			512
+#define KERNEL_SECTOR_SIZE_SHIFT	9
+#define KERNEL_SECTOR_SIZE		(1 << KERNEL_SECTOR_SIZE_SHIFT)
+#define SECTOR_SIZE_SHIFT		9
+#define SECTOR_SIZE			(1 << SECTOR_SIZE_SHIFT)
 
 #define PRBBD_MINORS			16
 
@@ -60,10 +62,10 @@ static int prbbd_major;
 static void prbbd_transfer(struct prbbd_dev *dev, sector_t sector,
 			   sector_t nsect, char *buffer, int write)
 {
-	unsigned long offset = sector * KERNEL_SECTOR_SIZE;
-	unsigned long nbytes = nsect * KERNEL_SECTOR_SIZE;
+	unsigned long offset = sector << KERNEL_SECTOR_SIZE_SHIFT;
+	unsigned long nbytes = nsect << KERNEL_SECTOR_SIZE_SHIFT;
 
-	if (offset + nbytes > dev->size * SECTOR_SIZE) {
+	if (offset + nbytes > dev->size << SECTOR_SIZE_SHIFT) {
 		printk(KERN_NOTICE "Beyond-end access (offset: %ld / bytes: %ld)\n",
 		       offset, nbytes);
 		return;
@@ -109,7 +111,7 @@ static int prbbd_xfer_bio(struct prbbd_dev *prbbd, struct bio *bio)
 
 	bio_for_each_segment(bvec, bio, i) {
 		char *buffer = __bio_kmap_atomic(bio, i, KM_USER0);
-                sector_t nsect = bio_cur_bytes(bio) / KERNEL_SECTOR_SIZE;
+                sector_t nsect = bio_cur_bytes(bio) >> KERNEL_SECTOR_SIZE_SHIFT;
 		prbbd_transfer(prbbd, sector, nsect,
 			       buffer, bio_data_dir(bio) == WRITE);
 		sector += nsect;
@@ -204,7 +206,7 @@ static int register_device(char *name, resource_size_t start /* in bytes */,
         case RM_NOQUEUE:
                 new->queue = blk_alloc_queue(GFP_KERNEL);
                 if (! new->queue) {
-                        pr_err("blk_init_queue failed\n");
+                        pr_err("blk_alloc_queue failed\n");
                         goto out2;
                 }
                 blk_queue_make_request(new->queue, prbbd_make_request);
